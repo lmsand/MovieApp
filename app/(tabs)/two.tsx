@@ -1,11 +1,36 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, FlatList, Text, ActivityIndicator } from "react-native";
+import { View } from "@/components/Themed";
+import { fetchTopRatedMovies } from "@/api/movies";
+import { useQuery } from "@tanstack/react-query";
+import MovieListItem from "@/components/MovieListItem";
+import { fetchWatchlistMovies } from "@/api/watchlist";
 
-import { View } from '@/components/Themed';
+export default function WatchList() {  // replaces commented code below
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ["watchlist"], queryFn: fetchWatchlistMovies });
 
-export default function TabTwoScreen() {
+
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <Text>{error.message}</Text>;
+  }
+
   return (
     <View style={styles.container}>
-
+      <FlatList
+        data={data}
+        numColumns={2}
+        contentContainerStyle={{gap: 5, padding: 5}}
+        columnWrapperStyle={{ gap: 5}}
+        renderItem={({ item }) => <MovieListItem movie={item} />}
+        />
     </View>
   );
 }
@@ -13,7 +38,5 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
